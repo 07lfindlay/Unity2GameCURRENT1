@@ -1,0 +1,207 @@
+
+
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using Pathfinding;
+
+public class EnemyScript : MonoBehaviour
+{
+    //Animation, graphics
+    public Animator animator;
+    public SpriteRenderer sr;
+    public Sprite forward;
+    public Sprite backward;
+
+    //Vision, detection
+    public GameObject innerCone;
+    public GameObject outerCone;
+    public InnerCone ICScript;
+    public OuterCone OCScript;
+    public GameObject pivot;
+    public int myState;
+
+    //Shooting, attack system
+    public GameObject laserPrefab;
+    public GameObject bulletStart;
+    public int bulletSpeed;
+    public Transform player;
+    public float timeBetweenShots;
+    public float resettime;
+
+    public float attentionRadius = 2.5f;
+    public float StopRadius = 1f;
+
+    // Health and colours
+    public int health;
+    private Color baseColor;
+    private Color damageColor;
+    public healthbar healthbar;
+
+    //Movement (TODO AI movement)
+    // public float horizontalMovement;
+    // public float verticalMovement;
+    public int direction; // NB: 0 = Upward/Backward, 1 = Right, 2 = Downward/Forward, 3 = Left
+    public float moveSpeed = 1f;
+    public List<Transform> PatrolPath;
+    public int currentPoint=1;
+    public float roundingDistance = 0.2f;
+    private List<Vector3> path = null;
+    
+    //pathfinding
+    public float nextWaypointD = 0.2f;
+    private Path aipathToplayer;
+    private Path aiPatrolpath;
+    private int currentWaypoint = 0;
+    private bool reachedEnd = false;
+    private Seeker seeker;
+    private Rigidbody2D rb;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        sr = gameObject.GetComponent<SpriteRenderer>();
+        myState = 0;
+
+        ICScript = innerCone.GetComponent<InnerCone>();
+        OCScript = outerCone.GetComponent<OuterCone>();
+
+        health = 100;
+        healthbar.setHealth(health);
+        baseColor = new Color(1f, 1f, 1f, 1f);
+        damageColor = new Color(1f, 0.1f, 0.1f, 1f);
+        timeBetweenShots = 1000.0f;
+        seeker = GetComponent<Seeker>();
+        rb = GetComponent<Rigidbody2D>();
+
+    }
+    
+    
+    public void checkDistance()
+    {
+        Vector3 startPos = transform.position;
+        if (myState == 1 &&
+            Vector3.Distance(player.position,transform.position) > StopRadius)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, player.position, moveSpeed * Time.deltaTime);
+            Vector3 dir = (transform.position - startPos).normalized;
+            checkDir(dir);
+            
+        }
+        else if (myState == 0)
+        {
+            if (Vector2.Distance(transform.position,
+                PatrolPath[currentPoint].position) > roundingDistance)
+            {
+                transform.position = Vector3.MoveTowards(transform.position, PatrolPath[currentPoint].position, moveSpeed * Time.deltaTime);
+                Vector3 dir = (transform.position - startPos).normalized;
+                checkDir(dir);
+
+            }
+            else
+            {
+                changeGoal();
+            }
+        }
+        // else if (myState == 2)
+        // {
+        //     chase();
+        // }
+        
+    }
+
+
+
+    void Update()
+    {
+        animator.SetInteger("State", myState);
+        
+        if (myState != 2)
+        {
+            stateChanger();
+        }
+        checkDistance();
+        if (timeBetweenShots <= 0.0f)
+        {
+            Instantiate(laserPrefab, bulletStart.transform.position, Quaternion.identity);
+            timeBetweenShots = resettime;
+        } else
+        {
+            timeBetweenShots -=  Time.deltaTime;
+        }
+    }
+
+    void stateChanger()
+    {
+        myState = OCScript.getState();
+
+        if (ICScript.getDetected())
+            myState = 2;
+            timeBetweenShots = resettime;
+    }
+    
+    void takeDamage(int damage)
+    {
+        StartCoroutine("DamageFlash");
+        health -= damage;
+        healthbar.setHealth(health);
+        if (health <= 0)
+            Destroy(gameObject);
+    }
+    
+    IEnumerator DamageFlash()
+    {
+        sr.color = damageColor;
+        yield return new WaitForSeconds(0.1f);
+        sr.color = baseColor;
+    }
+    
+    void checkDir(Vector3 direction)
+    {
+        if (direction.x > 0)
+        {
+            pivot.transform.rotation = Quaternion.Euler(0, 0, 180);
+        }
+
+        if (direction.x < 0)
+        {
+            pivot.transform.rotation = Quaternion.Euler(0, 0, 0);
+        }
+
+        if (direction.y > 0)
+        {
+            pivot.transform.rotation = Quaternion.Euler(0, 0, 270);
+            sr.sprite = forward;
+        }
+
+        if (direction.y < 0)
+        {
+            pivot.transform.rotation = Quaternion.Euler(0, 0, 90);
+            sr.sprite = backward;
+        }
+    }
+    
+
+
+    private void changeGoal()
+    {
+        if (currentPoint == PatrolPath.Count - 1) 
+        {
+            // if the robot is at the endpoint of the patrol path: the last transform
+            currentPoint = 0;
+        }
+        else
+        {
+            currentPoint++;
+        }
+    }
+    
+    
+    
+    
+    
+    
+    
+}
+
