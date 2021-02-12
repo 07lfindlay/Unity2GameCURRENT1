@@ -1,8 +1,8 @@
 # Unity2Game_
 
-Dead Silent: A kinda top-down stealth-hacking-guns-a-blazing procedurally generated roguelike, coming to all major platforms
+Dead Silent: A kinda top-down stealth-hacking-guns-a-blazing roguelike, coming to all major platforms Q4 2021
 
-This game sees the adventure of a lone robot who tries to escape the factory. The mechanics of the game revolve around combining hacking and stealthy blasting of opposition robots to enable the lone robot to leave the factory. Dead silent adopts a procedurally generated rogue-like and top down level framework to produce an exciting and thrilling experience of excape.
+This game sees the adventure of a lone robot who tries to escape the factory. The mechanics of the game revolve around combining hacking and stealthy blasting of opposition robots to enable the lone robot to leave the factory. Dead Silent adopts smart enemy patrolling and pathfinding, along with handcrafted top down level framework to produce an exciting and thrilling experience of escape.
 
 
 V  Current work division  V
