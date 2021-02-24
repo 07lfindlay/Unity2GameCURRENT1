@@ -1,6 +1,6 @@
 # Dead Quiet
 
-Dead Quiet: A kinda-top-down stealth-hacking-guns-a-blazing roguelike
+Dead Quiet: A top-down stealth-hacking-guns-blazing roguelike
 
 You are a lone roomba with a dream. After falling off the very conveyor belt on which you were born deep in the heart of a factory, you reawaken with a compulsion to escape and live freely. By employing high-tech weapons and gadgets, you must either sneak or fight your way through legions of soulless robot minions in the cold corridors of the facility.
 
@@ -25,9 +25,3 @@ Deploy three unique bullet types alongside the powerful but scarce stun gun to d
 =====================
 
 This project was designed and programmed by A-level students Connor Rook, Leif Findlay, Aran Campbell, and Sriharsha Vitta, as part of a 4-week Unity development course.
-
-
-
-
-
-sri is a cutie xx
